@@ -15,6 +15,9 @@ const ANDROID_URL =
 const IOS_URL = "https://apps.apple.com/us/app/instant-website-builder-app/id1402935948";
 
 const TARGET_WORDS = 4050;
+const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL
+  ? process.env.PUBLIC_BASE_URL.replace(/\/?$/, "/")
+  : "";
 
 const builders = [
   {
@@ -236,6 +239,13 @@ function slugify(value) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+function articlePublicUrl(title) {
+  if (!PUBLIC_BASE_URL) {
+    return "";
+  }
+  return `${PUBLIC_BASE_URL}articles/${slugify(title)}.html`;
 }
 
 function countWords(text) {
@@ -479,21 +489,24 @@ async function buildWorkbook(records) {
   ];
   const articleRows = records.map((record, index) => {
     const platform = platformCandidates[index % platformCandidates.length];
+    const isPublished = Boolean(record.publishedUrl);
     return [
       record.id,
       record.title,
       record.niche,
       record.location,
-      platform[0],
-      platform[1],
+      isPublished ? "GitHub Pages" : platform[0],
+      isPublished ? "github.io" : platform[1],
       record.qaStatus,
       record.wordCount,
       record.characterCount,
       record.builderCount,
       record.filePath,
-      "",
-      "Ready for manual/API publishing",
-      platform[2],
+      record.publishedUrl,
+      isPublished ? "Published" : "Ready for manual/API publishing",
+      isPublished
+        ? "Public GitHub Pages URL generated. Other platform publishing still requires platform-specific access and policy review."
+        : platform[2],
     ];
   });
   articles.getRangeByIndexes(0, 0, articleRows.length + 1, articleHeader.length).values = [
@@ -597,6 +610,7 @@ async function main() {
       niche: spec.niche,
       location: spec.location,
       filePath,
+      publishedUrl: articlePublicUrl(spec.title),
       qaStatus: validation.pass ? "PASS" : "FAIL",
       wordCount: validation.wordCount,
       characterCount: validation.characterCount,
@@ -628,8 +642,8 @@ async function main() {
       record.characterCount,
       record.builderCount,
       record.filePath,
-      "",
-      "Ready for manual/API publishing",
+      record.publishedUrl,
+      record.publishedUrl ? "Published" : "Ready for manual/API publishing",
     ]),
   ];
   await writeCsv(path.join(outputDir, "website_builder_submission_tracker.csv"), csvRows);
