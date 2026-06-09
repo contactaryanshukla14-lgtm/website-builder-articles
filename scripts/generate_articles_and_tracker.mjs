@@ -18,6 +18,9 @@ const TARGET_WORDS = 4050;
 const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL
   ? process.env.PUBLIC_BASE_URL.replace(/\/?$/, "/")
   : "";
+const EXTRA_PUBLISHED_URLS = {
+  "34": "https://dev.to/aryan_shukla/top-10-free-website-builders-for-software-freelancers-in-warsaw-3hb2",
+};
 
 const builders = [
   {
@@ -484,6 +487,7 @@ async function buildWorkbook(records) {
     "Builder Count",
     "Draft File",
     "Published URL",
+    "Additional Published URLs",
     "Submission Status",
     "Notes",
   ];
@@ -503,6 +507,7 @@ async function buildWorkbook(records) {
       record.builderCount,
       record.filePath,
       record.publishedUrl,
+      record.extraPublishedUrls,
       isPublished ? "Published" : "Ready for manual/API publishing",
       isPublished
         ? "Public GitHub Pages URL generated. Other platform publishing still requires platform-specific access and policy review."
@@ -513,14 +518,14 @@ async function buildWorkbook(records) {
     articleHeader,
     ...articleRows,
   ];
-  articles.tables.add(`A1:N${articleRows.length + 1}`, true, "ArticlesTable");
+  articles.tables.add(`A1:O${articleRows.length + 1}`, true, "ArticlesTable");
   articles.freezePanes.freezeRows(1);
-  articles.getRange("A1:N1").format = {
+  articles.getRange("A1:O1").format = {
     fill: "#16324F",
     font: { color: "#FFFFFF", bold: true },
   };
-  articles.getRange("A:N").format.wrapText = true;
-  const articleWidths = [48, 280, 180, 120, 150, 160, 90, 90, 110, 100, 330, 180, 180, 280];
+  articles.getRange("A:O").format.wrapText = true;
+  const articleWidths = [48, 280, 180, 120, 150, 160, 90, 90, 110, 100, 330, 230, 230, 180, 280];
   articleWidths.forEach((width, idx) => {
     articles.getRangeByIndexes(0, idx, 1, 1).format.columnWidthPx = width;
   });
@@ -611,6 +616,7 @@ async function main() {
       location: spec.location,
       filePath,
       publishedUrl: articlePublicUrl(spec.title),
+      extraPublishedUrls: EXTRA_PUBLISHED_URLS[spec.id] ?? "",
       qaStatus: validation.pass ? "PASS" : "FAIL",
       wordCount: validation.wordCount,
       characterCount: validation.characterCount,
@@ -630,6 +636,7 @@ async function main() {
       "Builder Count",
       "Draft File",
       "Published URL",
+      "Additional Published URLs",
       "Submission Status",
     ],
     ...records.map((record) => [
@@ -643,6 +650,7 @@ async function main() {
       record.builderCount,
       record.filePath,
       record.publishedUrl,
+      record.extraPublishedUrls,
       record.publishedUrl ? "Published" : "Ready for manual/API publishing",
     ]),
   ];
