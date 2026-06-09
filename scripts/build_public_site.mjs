@@ -7,6 +7,9 @@ const rootDir = path.resolve(path.dirname(__filename), "..");
 const articlesDir = path.join(rootDir, "articles");
 const siteDir = path.join(rootDir, "docs");
 const siteArticlesDir = path.join(siteDir, "articles");
+const EXTRA_PUBLISHED_URLS = {
+  "34": "https://dev.to/aryan_shukla/top-10-free-website-builders-for-software-freelancers-in-warsaw-3hb2",
+};
 
 function slugFromFilename(filename) {
   return filename.replace(/^\d+-/, "").replace(/\.md$/i, "");
@@ -172,6 +175,7 @@ async function main() {
       "utf8",
     );
     articleRecords.push({
+      id: file.slice(0, 2),
       title,
       file,
       slug,
@@ -210,6 +214,11 @@ async function main() {
       <td>${index + 1}</td>
       <td>${escapeHtml(record.title)}</td>
       <td><a href="${record.urlPath}">GitHub Pages article</a></td>
+      <td>${
+        EXTRA_PUBLISHED_URLS[record.id]
+          ? `<a href="${EXTRA_PUBLISHED_URLS[record.id]}">DEV article</a>`
+          : ""
+      }</td>
       <td>Published on GitHub Pages</td>
     </tr>`,
     )
@@ -226,7 +235,7 @@ async function main() {
     </section>
     <section class="table-wrap">
       <table>
-        <thead><tr><th>#</th><th>Title</th><th>Public URL</th><th>Status</th></tr></thead>
+        <thead><tr><th>#</th><th>Title</th><th>Public URL</th><th>Additional URL</th><th>Status</th></tr></thead>
         <tbody>${trackerRows}</tbody>
       </table>
     </section>`,
