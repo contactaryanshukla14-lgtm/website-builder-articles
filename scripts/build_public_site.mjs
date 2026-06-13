@@ -8,6 +8,11 @@ const articlesDir = path.join(rootDir, "articles");
 const siteDir = path.join(rootDir, "docs");
 const siteArticlesDir = path.join(siteDir, "articles");
 const EXTRA_PUBLISHED_URLS = {
+  "01": "https://write.as/1yp3gwfj4gv4k.md",
+  "02": "https://write.as/7mancxvvttsgh.md",
+  "03": "https://write.as/w9gzvzxfj1yiz.md",
+  "04": "https://write.as/cxj9gkmj3r43w.md",
+  "05": "https://write.as/w0uq8d6pm5xne.md",
   "34": "https://dev.to/aryan_shukla/top-10-free-website-builders-for-software-freelancers-in-warsaw-3hb2",
 };
 
